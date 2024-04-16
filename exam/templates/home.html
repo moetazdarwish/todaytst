@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+</head>
+<body>
+<form method="post">{% csrf_token %}
+    <input type="text" name="name" required>
+    <input type="number" name="age" required maxlength="2" max="99" min="0">
+    <input type="number" id="nationalityID" name="nationalityID" required maxlength="14" onchange="search()">
+    <input type="date" name="birthDate" required>
+
+    <button type="submit"> Submit</button>
+
+</form>
+
+<div id="dta">
+    {% for i in data %}
+    <div class="row"> <h3>{{i.name}}</h3> -  <h4>{{i.age}}</h4> - <h4>{{i.nationalityID}}</h4> - <h4>{{i.birthDate}}</h4>
+    <a href="{% url 'deltestform' i.id %}">Delete</a>
+    </div>
+    {% endfor %}
+</div>
+
+
+</body>
+
+<script>
+function search() {
+srch = document.getElementById('nationalityID').value
+    $.ajax({
+        type: "post",
+        url: 'http://127.0.0.1:8000/search/',
+        data:{
+            'nationalityID':srch
+        },
+
+        success: function(data) {
+            dta = document.getElementById('dta')
+            dta.innerHTML = ''
+            console.log(data)
+            for (let i = 0; i < data.length; i++) {
+               html =  '<div class="row"> <h3>'+i.name+'</h3> -  <h4>'+i.age+'</h4> - <h4>'+i.nationalityID+'</h4> - <h4>'+i.birthDate+'</h4><a href="{% url "deltestform" '+i.id+' %}">Delete</a>'
+                data +=html     
+            }
+            dta.innerHTML = data
+                
+
+        },
+        error: function(data) {
+
+          console.log(data)
+        }
+    });
+}
+</script>
+</html>
+
